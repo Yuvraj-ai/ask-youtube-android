@@ -1,0 +1,62 @@
+screens:
+  - id: home
+    name: AskYoutube
+    purpose: >
+      The single working surface. Paste a YouTube link, ask questions about it,
+      read grounded answers with the transcript chunks that support them.
+    components:
+      - TopAppBar with app name + settings icon
+      - Video card: thumbnail, title, duration; tap to change video
+      - Conversation list (LazyColumn, newest at the bottom)
+      - Question bubbles (user) and answer cards (assistant)
+      - Answer card sources section, collapsible, per-chunk with timestamp
+      - Bottom chat input + send button
+      - Inline states: empty, indexing progress, answering, error banner
+    states: [empty, indexing, ready, answering, error]
+    navigation:
+      enters_from: [app_launch, settings_back]
+      exits_to: [settings]
+    features:
+      - youtube_url_entry
+      - question_entry
+      - submit_action
+      - transcript_extraction
+      - transcript_chunking
+      - transcript_embedding
+      - vector_index_and_search
+      - answer_generation
+      - answer_display
+      - retrieved_sources
+      - index_caching
+      - error_handling
+      - app_branding
+
+  - id: settings
+    name: Settings
+    purpose: >
+      Hold the Gemini API key, validate it, and expose the model ids. This is
+      the "space in setting to enter the api key" requested by the user.
+    components:
+      - TopAppBar with back arrow, title "Settings"
+      - "API key section: masked field, show/hide toggle, Validate button,
+        status line (untested / checking / valid / invalid)"
+      - "Clear key button, destructive"
+      - "Retrieval section: number of chunks slider (k, default 4)"
+      - Models section: embedding model id, chat model id, both editable
+      - About section: what the app does, that the key stays on device
+    states: [loading, ready, validating, valid, invalid]
+    navigation:
+      enters_from: [home]
+      exits_to: [home]
+    features:
+      - gemini_api_key_entry
+
+notes:
+  - >
+    Two destinations only, so navigation is a screen enum plus BackHandler
+    rather than the Navigation Compose graph. Recorded in decisions.yaml as
+    decision navigation_library, with the upgrade ceiling noted in code.
+  - >
+    Settings is a separate destination, not a bottom-nav tab, because there is
+    exactly one primary surface. Adding a tab bar for a single tab would be
+    layout theatre.

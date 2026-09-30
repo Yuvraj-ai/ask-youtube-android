@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AskYoutube</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-container": "#0069de",
+            "surface-dim": "#eed5cd",
+            "tertiary-fixed": "#d8e2ff",
+            "primary-fixed-dim": "#ffb59d",
+            "on-secondary-container": "#63646c",
+            "on-secondary": "#ffffff",
+            "secondary-fixed-dim": "#c6c5cf",
+            "inverse-on-surface": "#ffede8",
+            "ink-faint": "#A1A1AA",
+            "surface-bright": "#fff8f6",
+            "tertiary-fixed-dim": "#adc6ff",
+            "surface-variant": "#f7ddd6",
+            "surface-container-high": "#fce3db",
+            "hairline": "#E4E4E7",
+            "on-primary-fixed-variant": "#832600",
+            "canvas": "#FAFAF9",
+            "surface-muted": "#F4F4F5",
+            "surface-container-lowest": "#ffffff",
+            "dark-surface-muted": "#27272A",
+            "surface": "#FFFFFF",
+            "primary-container": "#c2410c",
+            "dark-error": "#FCA5A5",
+            "surface-container": "#ffe9e3",
+            "outline": "#8d7168",
+            "secondary": "#5d5e66",
+            "on-tertiary-fixed-variant": "#004494",
+            "surface-tint": "#ac3400",
+            "error-container": "#ffdad6",
+            "primary-fixed": "#ffdbd0",
+            "background": "#fff8f6",
+            "on-background": "#261814",
+            "on-secondary-fixed": "#1a1b22",
+            "dark-ember": "#FB923C",
+            "surface-container-highest": "#f7ddd6",
+            "on-tertiary-container": "#ecf0ff",
+            "on-primary-fixed": "#390c00",
+            "inverse-primary": "#ffb59d",
+            "primary": "#9b2f00",
+            "ink": "#18181B",
+            "on-error": "#ffffff",
+            "dark-surface": "#18181B",
+            "tertiary": "#0051af",
+            "error": "#B91C1C",
+            "dark-hairline": "#3F3F46",
+            "inverse-surface": "#3c2d28",
+            "on-tertiary-fixed": "#001a41",
+            "on-surface-variant": "#59413a",
+            "on-error-container": "#93000a",
+            "secondary-fixed": "#e3e1ec",
+            "ember": "#C2410C",
+            "on-surface": "#261814",
+            "dark-ink-faint": "#71717A",
+            "on-primary": "#ffffff",
+            "ink-muted": "#71717A",
+            "secondary-container": "#e3e1ec",
+            "on-tertiary": "#ffffff",
+            "on-secondary-fixed-variant": "#46464e",
+            "on-primary-container": "#ffece7",
+            "dark-ink": "#FAFAF9",
+            "surface-container-low": "#fff1ed",
+            "outline-variant": "#e1bfb5",
+            "dark-ink-muted": "#A1A1AA",
+            "dark-canvas": "#09090B"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "space-xl": "2rem",
+            "space-md": "0.75rem",
+            "space-lg": "1.5rem",
+            "margin": "1rem",
+            "space-xs": "0.25rem",
+            "gutter": "1rem"
+          },
+          "fontFamily": {
+            "label": ["Roboto", "sans-serif"],
+            "headline-lg": ["Roboto", "sans-serif"],
+            "body-lg": ["Roboto", "sans-serif"],
+            "headline-sm": ["Roboto", "sans-serif"],
+            "mono-data": ["JetBrains Mono", "monospace"],
+            "body-md": ["Roboto", "sans-serif"],
+            "headline-md": ["Roboto", "sans-serif"],
+            "body-sm": ["Roboto", "sans-serif"]
+          },
+          "fontSize": {
+            "label": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+            "headline-lg": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "headline-sm": ["16px", { "lineHeight": "22px", "fontWeight": "500" }],
+            "mono-data": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-md": ["18px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    @keyframes indeterminate {
+      0% {
+        left: -35%;
+        right: 100%;
+      }
+      60% {
+        left: 100%;
+        right: -90%;
+      }
+      100% {
+        left: 100%;
+        right: -90%;
+      }
+    }
+    .animate-progress {
+      position: absolute;
+      background-color: #C2410C;
+      top: 0;
+      bottom: 0;
+      animation: indeterminate 2s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-canvas text-ink antialiased min-h-screen flex flex-col justify-between items-center selection:bg-surface-muted selection:text-ink">
+<!-- Mobile Frame Container (Constrained 640px max width) -->
+<div class="w-full max-w-[640px] min-h-screen bg-canvas flex flex-col relative justify-between">
+<!-- Header Section (Native Android Bar + Shared TopAppBar) -->
+<header class="w-full bg-surface shrink-0 z-20">
+<!-- Native Android Status Bar Emulation -->
+<div class="w-full h-7 px-4 flex items-center justify-between text-ink-muted text-xs select-none">
+<span class="font-mono-data text-body-sm font-medium text-ink">9:41</span>
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-[15px] leading-none" data-icon="signal_cellular_alt">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[15px] leading-none" data-icon="wifi">wifi</span>
+<span class="material-symbols-outlined text-[15px] leading-none" data-icon="battery_full">battery_full</span>
+</div>
+</div>
+<!-- Shared TopAppBar -->
+<div class="w-full max-w-[640px] mx-auto flex items-center justify-between px-margin h-14 border-b border-hairline bg-surface">
+<div class="flex items-center space-x-2.5">
+<span class="material-symbols-outlined text-ember text-2xl" data-icon="smart_display">smart_display</span>
+<h1 class="font-headline-md text-headline-md font-bold text-ink tracking-tight">AskYoutube</h1>
+</div>
+<button aria-label="Settings" class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-muted transition-colors duration-150 ease-out active:opacity-80 text-ink-muted" type="button">
+<span class="material-symbols-outlined text-xl" data-icon="settings">settings</span>
+</button>
+</div>
+<!-- Video Link Input Region & Status -->
+<div class="px-margin pt-3 pb-3 border-b border-hairline bg-surface">
+<label class="block font-label text-label text-ink-muted mb-1.5" for="video-url">
+          YouTube link
+        </label>
+<div class="relative flex items-center rounded-xl border border-hairline bg-canvas px-3 py-2.5">
+<input class="w-full bg-transparent border-0 p-0 font-mono-data text-body-sm text-ink focus:ring-0 focus:outline-none truncate" id="video-url" readonly="" type="text" value="https://www.youtube.com/watch?v=dQw4w9WgXcQ"/>
+<button aria-label="Copy link" class="ml-2 text-ink-muted hover:text-ink transition-colors flex items-center" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+<!-- 2dp Indeterminate Progress Bar in Ember -->
+<div class="relative w-full h-[2px] bg-hairline overflow-hidden rounded-full mt-2.5">
+<div class="animate-progress"></div>
+</div>
+<!-- Status Line -->
+<div class="flex items-center space-x-1.5 mt-2">
+<span class="w-1.5 h-1.5 rounded-full bg-ember"></span>
+<span class="font-label text-label text-ink-muted">Thinking…</span>
+</div>
+</div>
+</header>
+<!-- Conversation Canvas (Scrolling reading surface) -->
+<main class="w-full flex-1 px-margin py-3 flex flex-col justify-end space-y-6 overflow-hidden">
+<!-- Clipped Previous Answer (Partially visible at top to imply scrollable history) -->
+<div aria-hidden="true" class="w-full opacity-60 pointer-events-none select-none -mt-10 overflow-hidden">
+<div class="bg-surface rounded-2xl border border-hairline p-4">
+<p class="font-body-md text-body-md text-ink-muted line-clamp-1">
+            ...primarily focused on the infrastructure overhead and regional delivery costs before introducing the revised limits for self-hosted instances.
+          </p>
+</div>
+</div>
+<!-- User Question Turn (Right-aligned, Surface Muted, Asymmetric Corner) -->
+<div class="flex justify-end w-full">
+<div class="max-w-[80%] bg-surface-muted text-ink px-4 py-3 rounded-2xl rounded-br-[4px] border border-hairline/60">
+<p class="font-headline-sm text-headline-sm text-ink leading-relaxed">
+            What did he say about the pricing change?
+          </p>
+</div>
+</div>
+<!-- Answer Card Turn (Loudest reading surface, 16dp radius, 1px hairline border, zero drop shadow) -->
+<article class="w-full bg-surface border border-hairline rounded-2xl p-4 flex flex-col">
+<!-- Answer Body Text: 16sp font, 26sp leading, pure Ink text -->
+<div class="space-y-4 text-ink font-body-lg text-body-lg">
+<p>
+            Around the eighteen minute mark he walks through the pricing change in detail. He says the free tier moves from three projects to two, and that the change applies at the next billing cycle rather than immediately.
+          </p>
+<p>
+            He is explicit that existing customers keep their current rate for twelve months, and that the annual plan is unaffected. When asked about grandfathered pricing he repeats that it holds for a year and that support will honour it without requiring an upgrade.
+          </p>
+<p>
+            He closes the topic by noting that the change is intended to fund the storage work, and that seats on the team plan are unchanged.
+          </p>
+</div>
+<!-- Sources Disclosure: Expanded cleanly inline (No cards, 1px hairline dividers) -->
+<div class="mt-5 pt-3.5 border-t border-hairline">
+<!-- Disclosure Header -->
+<div class="flex items-center justify-between py-1 cursor-default select-none">
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-ink-muted text-[17px]" data-icon="format_quote">format_quote</span>
+<span class="font-label text-label text-ink-muted">From the transcript (4)</span>
+</div>
+<span class="material-symbols-outlined text-ink-muted text-lg rotate-180" data-icon="expand_more">expand_more</span>
+</div>
+<!-- Expanded Source Rows List -->
+<div class="mt-2 divide-y divide-hairline">
+<!-- Source 1 -->
+<div class="py-2.5 flex flex-col space-y-1">
+<div class="flex items-center space-x-2">
+<span class="font-mono-data text-label font-medium text-ember">12:04</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-muted leading-snug">
+                So the first thing to know is that we are changing how the free tier works starting next cycle.
+              </p>
+</div>
+<!-- Source 2 -->
+<div class="py-2.5 flex flex-col space-y-1">
+<div class="flex items-center space-x-2">
+<span class="font-mono-data text-label font-medium text-ember">18:31</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-muted leading-snug">
+                If you are on the free plan today you currently get three projects. Under the new structure that becomes two.
+              </p>
+</div>
+<!-- Source 3 -->
+<div class="py-2.5 flex flex-col space-y-1">
+<div class="flex items-center space-x-2">
+<span class="font-mono-data text-label font-medium text-ember">24:09</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-muted leading-snug">
+                To be clear, this is not a retroactive change. Nobody gets billed differently for a period they have already paid for.
+              </p>
+</div>
+<!-- Source 4 -->
+<div class="py-2.5 flex flex-col space-y-1 pb-1">
+<div class="flex items-center space-x-2">
+<span class="font-mono-data text-label font-medium text-ember">31:52</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-muted leading-snug">
+                Annual plans are not affected by this, and team seats stay exactly where they are today.
+              </p>
+</div>
+</div>
+</div>
+</article>
+</main>
+<!-- Bottom Docked Area: Input Bar & Android Home Indicator -->
+<footer class="w-full bg-surface border-t border-hairline shrink-0 z-20">
+<div class="w-full px-margin py-3 flex items-center space-x-3">
+<!-- Input Field Container -->
+<div class="flex-1 min-h-[46px] bg-canvas border border-hairline rounded-xl px-3.5 py-2.5 flex items-center focus-within:border-ember focus-within:ring-1 focus-within:ring-ember transition-colors">
+<input class="w-full bg-transparent border-0 p-0 text-ink placeholder-ink-faint font-body-md text-body-md focus:ring-0 focus:outline-none" placeholder="Ask about this video" type="text"/>
+</div>
+<!-- 44dp Circular Send Button (Ember Fill with 20dp white arrow) -->
+<button aria-label="Send question" class="w-11 h-11 rounded-full bg-ember flex items-center justify-center shrink-0 text-surface hover:opacity-95 active:scale-95 transition-all duration-150 ease-out focus:outline-none" type="button">
+<span class="material-symbols-outlined text-[20px] leading-none" data-icon="arrow_upward">arrow_upward</span>
+</button>
+</div>
+<!-- Native Android Gesture Bar / Home Pill Area -->
+<div class="w-full h-5 flex justify-center items-center pb-1">
+<div class="w-28 h-1 bg-ink/20 rounded-full"></div>
+</div>
+</footer>
+</div>
+</body></html>

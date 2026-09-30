@@ -1,0 +1,372 @@
+# Feature inventory — discovered capabilities and proposed migration actions.
+# Every `user_decision.status` is `pending` until the user classifies it.
+# See ../.migration/analysis.md for evidence and uncertainty.
+
+features:
+  - id: gemini_api_key_entry
+    name: Gemini API key entry
+    source:
+      files: [main.py]
+      technology: streamlit
+    current_behavior: >
+      Password-masked text field in the sidebar form. Not persisted; lives in
+      process memory for the life of the session. No validation — an empty or
+      wrong key fails later inside the Google client. Not guarded by the
+      submit button, so it re-reads on every rerun.
+    migration:
+      action: modify
+      android:
+        screen: settings
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes:
+        - Move from the sidebar form to a dedicated Settings screen (user request).
+        - Persist encrypted at rest, not just in memory.
+        - Validate on entry with a cheap probe call and show inline feedback.
+        - Offer an explicit "clear key" action.
+    user_decision:
+      status: pending
+      decision: "User requested: 'use a space in setting to enter the api key'. Placement agreed; persistence model needs confirmation (Model A vs B in security.md)."
+
+  - id: youtube_url_entry
+    name: YouTube video URL entry
+    source:
+      files: [main.py]
+      technology: streamlit
+    current_behavior: Single-line-ish text area, capped at 200 chars. No format validation.
+    migration:
+      action: preserve
+      android:
+        screen: home
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes:
+        - Validate the URL shape (and the 11-char video id) before any network call.
+    user_decision:
+      status: pending
+      decision: null
+
+  - id: question_entry
+    name: Question entry
+    source:
+      files: [main.py]
+      technology: streamlit
+    current_behavior: Text area in the sidebar, paired with the URL in one form.
+    migration:
+      action: modify
+      android:
+        screen: home
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes:
+        - Promote from a sidebar textarea to a proper chat input on the main screen.
+    user_decision:
+      status: pending
+      decision: null
+
+  - id: submit_action
+    name: Submit action
+    source:
+      files: [main.py]
+      technology: streamlit
+    current_behavior: >
+      A submit button exists but is never read. The pipeline runs whenever the
+      URL and question are both non-empty, so the button is inert and the app
+      re-runs on every keystroke. (Defect D1/D2.)
+    migration:
+      action: replace
+      android:
+        screen: home
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes:
+        - Replace with a real send action that gates the request.
+        - Guard the button on required fields being present.
+    user_decision:
+      status: pending
+      decision: "Proposed fix, not a behaviour change to preserve."
+
+  - id: transcript_extraction
+    name: YouTube transcript extraction
+    source:
+      files: [uany.py]
+      technology: python
+    current_behavior: >
+      YoutubeLoader.from_youtube_url(url).load() via youtube-transcript-api.
+      Returns one transcript as a single document. `add_video_dashes` is not
+      passed, so auto-generated captions are not deliberately requested, which
+      is why some videos have no transcript at all. (Defect D10.)
+    migration:
+      action: modify
+      android:
+        screen: home
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes:
+        - Request the auto-generated transcript variant as a fallback.
+        - Surface a clear, actionable error when a video genuinely has no captions.
+    user_decision:
+      status: pending
+      decision: null
+
+  - id: transcript_chunking
+    name: Transcript chunking
+    source:
+      files: [uany.py]
+      technology: python
+    current_behavior: RecursiveCharacterTextSplitter, chunk_size 1000, chunk_overlap 100.
+    migration:
+      action: preserve
+      android:
+        screen: home
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes: []
+    user_decision:
+      status: pending
+      decision: null
+
+  - id: transcript_embedding
+    name: Transcript embedding
+    source:
+      files: [uany.py]
+      technology: python
+    current_behavior: >
+      GoogleGenerativeAIEmbeddings with `models/embedding-001` (768-dim). This
+      model has been superseded by Google's newer embedding models and may no
+      longer resolve. (Defect D6 / uncertainty U2.)
+    migration:
+      action: replace
+      android:
+        screen: home
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes:
+        - Move to a currently supported embedding model. The exact id must be confirmed against live API docs before implementation.
+    user_decision:
+      status: pending
+      decision: "Target model id needs confirmation — not inferred from the source."
+
+  - id: vector_index_and_search
+    name: Vector index and similarity search
+    source:
+      files: [uany.py]
+      technology: python
+    current_behavior: >
+      In-memory FAISS index built from the chunk embeddings, then
+      similarity_search(query, k=4) with k hardcoded. The index is discarded
+      after the request and rebuilt on the next rerun. (Defects D2, D11.)
+    migration:
+      action: replace
+      android:
+        screen: home
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes:
+        - Replace FAISS with an in-memory brute-force cosine scan over FloatArrays.
+          A transcript yields on the order of 10^2 chunks at 768 dims, which is
+          microseconds of work; a vector database would be pure overhead.
+        - Cache the index per video so repeat questions do not re-embed.
+    user_decision:
+      status: pending
+      decision: null
+
+  - id: answer_generation
+    name: Answer generation
+    source:
+      files: [uany.py]
+      technology: python
+    current_behavior: >
+      Retrieved chunk text is concatenated and placed in a PromptTemplate that
+      instructs the model to answer only from the transcript, to say "I don't
+      know" when the transcript is insufficient, and to be verbose. Runs on
+      gemini-2.0-flash at temperature 0 via the deprecated LLMChain.
+    migration:
+      action: preserve
+      android:
+        screen: home
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes:
+        - Same prompt intent and same grounding constraints.
+        - Drop LLMChain; call the generateContent endpoint directly.
+    user_decision:
+      status: pending
+      decision: null
+
+  - id: answer_display
+    name: Answer display
+    source:
+      files: [main.py]
+      technology: streamlit
+    current_behavior: >
+      st.subheader("ANSWER:") followed by st.text(textwrap.fill(response, 80)),
+      and the response was first flattened with replace("\n", "  "). Both
+      destroy the model's paragraph structure. Plain monospace, no formatting.
+      (Defect D4.)
+    migration:
+      action: replace
+      android:
+        screen: home
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes:
+        - Render the answer as selectable text with preserved paragraph breaks.
+    user_decision:
+      status: pending
+      decision: null
+
+  - id: retrieved_sources
+    name: Retrieved source visibility
+    source:
+      files: [uany.py, main.py]
+      technology: python
+    current_behavior: >
+      get_response_from_query returns the retrieved docs alongside the response,
+      but main.py discards them. The capability is half-built: the data exists
+      at the API boundary and is thrown away at the UI. (Defect D3.)
+    migration:
+      action: modify
+      android:
+        screen: home
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes:
+        - Show which transcript chunks supported the answer, with timestamps if
+          the transcript provides them.
+        - Make this the answer to the readme's own "add LLM response
+          sources/trace visualization" future item.
+    user_decision:
+      status: pending
+      decision: "Reasonable to activate, since the data already crosses the boundary."
+
+  - id: conversation_history
+    name: Conversation history
+    source:
+      files: [main.py]
+      technology: streamlit
+    current_behavior: None. Single-turn only; each question is independent and no history is kept.
+    migration:
+      action: add
+      android:
+        screen: home
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes:
+        - New capability. Requires a decision on whether follow-up questions
+          should be grounded against the whole transcript rather than the
+          top-k chunks, since a chat model needs the prior turns.
+    user_decision:
+      status: pending
+      decision: "Not present in the source. Adding it is a scope increase."
+
+  - id: index_caching
+    name: Per-video index caching
+    source:
+      files: [uany.py]
+      technology: python
+    current_behavior: None. The index is rebuilt from scratch on every rerun. (Defect D2.)
+    migration:
+      action: add
+      android:
+        screen: home
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes:
+        - New capability, but it is the direct fix for a known cost defect.
+    user_decision:
+      status: pending
+      decision: "Proposed as a fix rather than a new product feature."
+
+  - id: error_handling
+    name: Error handling
+    source:
+      files: [main.py, uany.py]
+      technology: python
+    current_behavior: None. Every failure surfaces as a raw traceback. (Defect D7.)
+    migration:
+      action: add
+      android:
+        screen: home
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes:
+        - "Distinct, recoverable states for: no key, bad key, invalid URL,
+          no captions on the video, quota exceeded, and network failure."
+    user_decision:
+      status: pending
+      decision: "Proposed as a fix. Should not be optional."
+
+  - id: app_branding
+    name: App title
+    source:
+      files: [main.py]
+      technology: streamlit
+    current_behavior: st.title("Youtube Assistant").
+    migration:
+      action: modify
+      android:
+        screen: home
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes:
+        - Needs a real product name and launcher icon. Note the source repo is
+          named "Summeriser" (a typo for "Summariser") while the app itself
+          answers questions rather than summarising. Worth resolving.
+    user_decision:
+      status: pending
+      decision: "Name not yet chosen."
+
+  - id: sidebar_form_layout
+    name: Sidebar form layout
+    source:
+      files: [main.py]
+      technology: streamlit
+    current_behavior: >
+      All three inputs live in one sidebar form, so nothing is a separate
+      destination in the UI.
+    migration:
+      action: remove
+      android:
+        screen: home
+        implementation: native_compose
+      backend:
+        required: false
+        operations: []
+      changes:
+        - The sidebar itself has no Android equivalent and the skill guidance
+          says not to reproduce a web layout when a native interaction is better.
+        - Its contents are redistributed into Home and Settings, not lost.
+    user_decision:
+      status: pending
+      decision: "Layout is deliberately not translated."

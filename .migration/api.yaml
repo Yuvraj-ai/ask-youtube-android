@@ -1,0 +1,118 @@
+# API contracts. There is no backend of our own: these are the third-party
+# endpoints the on-device client calls directly. All shapes verified against
+# vendor documentation on 2026-09-30.
+
+base_url_gemini: https://generativelanguage.googleapis.com/v1beta
+
+common_headers:
+  x-goog-api-key: <user-supplied key from Settings>
+  Content-Type: application/json
+
+endpoints:
+  - id: embed_text
+    method: POST
+    path: /models/gemini-embedding-2:embedContent
+    purpose: Embed a single string. Used once per transcript chunk and once per question.
+    request:
+      model: gemini-embedding-2
+      content: { parts: [ { text: "document: <chunk text>" } ] }
+      outputDimensionality: 768
+      taskType: RETRIEVAL_DOCUMENT
+    response:
+      embedding.values: "[float] x 768, unit-normalised"
+    notes:
+      - >
+        gemini-embedding-2 uses prompt-based task instructions rather than the
+        task_type parameter. The "document: " / "query: " prefixes carry the
+        task intent, per the vendor migration guidance.
+      - >
+        Called once per chunk, not batched. The documented multi-input behaviour
+        of gemini-embedding-2 aggregates embeddings unless each input is
+        wrapped, so per-item calls are the unambiguous path. Embedding cost is
+        paid once per video because the index is cached.
+      - >
+        outputDimensionality 768 is a documented recommended size and matches
+        the source app's FAISS index dimension.
+    errors:
+      - { code: 400, meaning: "Model id wrong or retired", user_message: "Embedding model unavailable. Change it in Settings." }
+      - { code: 400, meaning: "Missing or malformed API key", user_message: "Your Gemini API key is invalid." }
+      - { code: 403, meaning: "Key not authorised for this model / API not enabled", user_message: "This key cannot use the embedding model. Check it in Settings." }
+      - { code: 429, meaning: "Quota exhausted", user_message: "Gemini quota reached. Try later." }
+    source_functions: [uany.py:create_vector_db_from_youtube_url]
+
+  - id: generate_answer
+    method: POST
+    path: /models/gemini-3.5-flash:generateContent
+    purpose: Produce the grounded answer from the retrieved transcript chunks.
+    request:
+      contents: [ { parts: [ { text: "<prompt with question and transcript>" } ] } ]
+      generationConfig: { temperature: 0.0 }
+    response:
+      candidates[0].content.parts[0].text: "answer string"
+    notes:
+      - temperature 0 preserved from uany.py:36.
+      - No max_tokens and no timeout override, matching the source's intent of
+        "can handle only 4097 tokens" (comment at uany.py:29) without pinning
+        a limit that would truncate long answers.
+    errors:
+      - { code: 400, meaning: "Bad key", user_message: "Your Gemini API key is invalid." }
+      - { code: 429, meaning: "Rate or quota limit", user_message: "Gemini quota reached. Try later." }
+      - { code: 503, meaning: "Model overloaded", user_message: "Gemini is busy. Try again." }
+    source_functions: [uany.py:get_response_from_query]
+
+  - id: validate_key
+    method: GET
+    path: /models
+    purpose: >
+      Cheap probe used by the Settings screen to validate a pasted key before
+      the user relies on it. Lists visible models; success means the key works.
+    notes:
+      - Deliberately cheap. A full listModels call is far cheaper than an
+        embedding round trip, and it doubles as a model-availability check.
+    errors:
+      - { code: 400, meaning: "Invalid key", user_message: "That key was rejected by Google." }
+
+  - id: fetch_watch_page
+    method: GET
+    path: https://www.youtube.com/watch?v={videoId}&hl=en
+    purpose: >
+      Obtain the watch page HTML, from which captionTracks is extracted out of
+      the embedded player response. This is a scrape of an undocumented
+      surface; there is no official captions API.
+    request_headers:
+      User-Agent: "<desktop browser UA, required — YouTube returns an empty page otherwise>"
+      Accept-Language: "en-US,en;q=0.9"
+    response:
+      captionTracks: "[{ languageCode, kind, name.simpleText, baseUrl }]"
+    notes:
+      - "Track selection: prefer a manual English track (no kind), fall back to
+        the auto-generated one (kind == \"asr\"). The source passed no
+        add_video_dashes, so it silently missed auto captions — defect D10."
+    errors:
+      - { code: 200, meaning: "No captionTracks in page", user_message: "This video has no captions available." }
+      - { code: 200, meaning: "Page is a consent/ interstitial", user_message: "YouTube did not return a video page for this link." }
+
+  - id: fetch_caption_track
+    method: GET
+    path: "{baseUrl from captionTracks}&fmt=json3"
+    purpose: Fetch the actual timed transcript.
+    notes:
+      - >
+        Requires the same User-Agent as the watch page. The baseUrl is
+        signature- and expiry-bound to the visitor session, so it must be used
+        promptly and with cookies preserved from the watch-page fetch.
+      - >
+        VERIFIED FAILURE MODE: from a datacenter egress IP YouTube returns
+        HTTP 200 with content-length 0 and content-type text/html. This is an
+        empty body, not an error status. See validation.yaml V7. The app must
+        treat a zero-length body as a distinct, user-facing error.
+    response:
+      events[].segs[].utf8: "caption text"
+      events[].tStartMs: "int, cue start offset in milliseconds"
+    errors:
+      - { code: 200, meaning: "Zero-length body (datacenter IP or session expiry)", user_message: "YouTube returned an empty transcript. This happens on some networks." }
+
+  - id: list_models_not_used
+    method: GET
+    path: /models
+    purpose: Reserved. Not called by the app; documented so the probe endpoint is unambiguous.

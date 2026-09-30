@@ -1,0 +1,25 @@
+*.iml
+.gradle/
+/local.properties
+/.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+/app/build/
+/app/release/
+*.apk
+*.aab
+
+# Signing material lives in ~/.android/, never in the repo.
+*.jks
+*.keystore
+askyoutube-test.properties
+
+# Local development screenshots. Curated ones live in docs/screenshots/.
+/screenshots/
+
+# Kotlin compiler scratch
+.kotlin/

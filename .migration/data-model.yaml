@@ -1,0 +1,74 @@
+# Persisted entities and in-memory transformations.
+# Deliberately minimal: one secret, a few settings, zero tables.
+
+persisted:
+  - entity: Settings
+    storage: EncryptedSharedPreferences (androidx.security)
+    why_encrypted: >
+      It holds the user's Gemini API key. Plain SharedPreferences would leave
+      it readable in an unencrypted app-data backup. The rest of the fields
+      ride along in the same store rather than being split across two files.
+    fields:
+      - { name: api_key,        type: String, secret: true,  default: "" }
+      - { name: embedding_model, type: String, secret: false, default: "gemini-embedding-2" }
+      - { name: chat_model,      type: String, secret: false, default: "gemini-3.5-flash" }
+      - { name: top_k,          type: Int,    secret: false, default: 4 }
+    lifecycle:
+      - Written only on explicit user action (save / clear / slider release).
+      - "Clear key deletes the entry outright, not a blank overwrite."
+      - api_key is never logged, never included in error messages, never sent
+        anywhere except the x-goog-api-key header of generativelanguage calls.
+
+in_memory:
+  - entity: Cue
+    shape: { startMs: Long, text: String }
+    origin: one parsed caption segment
+    note: >-
+      The source discarded timings. Keeping them is what makes the sources
+      section show "12:04" instead of an opaque quote, and it is the fix for
+      defect D3.
+
+  - entity: Chunk
+    shape: { text: String, startMs: Long, endMs: Long, index: Int }
+    transform: RecursiveCharacterTextSplitter equivalent, 1000 chars / 100 overlap
+    note: >-
+      chunk_size and chunk_overlap are preserved exactly from uany.py:21 so
+      retrieval quality matches the source. Cue timings are carried through,
+      which the source did not do.
+
+  - entity: IndexedVideo
+    shape: "videoId: String, title: String?, chunks: List<Chunk>, vectors: Array<FloatArray>, dim: Int"
+    transform: chunks embedded via embed_text, one call per chunk
+    cache: >
+      Single-entry in-memory cache held by RagEngine, keyed by videoId. This is
+      the fix for defect D2: the source re-downloaded, re-chunked and re-embedded
+      the entire transcript on every Streamlit rerun.
+    ceiling: >
+      ponytail: single-video cache, lost on process death. Add a Room-backed
+      LRU if follow-up questions after backgrounding become a complaint.
+
+  - entity: RetrievedChunk
+    shape: { text: String, startMs: Long, score: Float }
+    transform: VectorIndex.cosineTopK(queryVector, k)
+
+  - entity: ChatTurn
+    shape: "role: user|assistant, text: String, sources: List<RetrievedChunk>?"
+    lifecycle: session only, not persisted
+    note: >
+      Deliberately not persisted. The source had no history at all, so
+      persistence would be an unrequested feature. Revisit if requested.
+
+not_created:
+  - Room database
+  - Vector database or on-disk index
+  - Cached transcript files on disk
+  - Any server-side schema
+
+why:
+  - >
+    The whole dataset for one video is on the order of 10^2 chunks of 768
+    floats — roughly 300 KB. That fits in memory many times over, and a
+    transcript is fetched in under a second. A database would add schema,
+    migrations, and invalidation logic to store data that is cheaper to
+    recompute than to manage. Add Room only when the in-memory cache limit
+    in architecture.yaml (L1) actually bites.

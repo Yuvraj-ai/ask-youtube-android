@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AskYoutube</string>
+
+    <string name="home_title">AskYoutube</string>
+    <string name="settings_title">Settings</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_back">Back</string>
+    <string name="action_send">Send</string>
+    <string name="action_save">Save</string>
+    <string name="action_paste">Paste</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_validate">Validate</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_show_key">Show API key</string>
+    <string name="action_hide_key">Hide API key</string>
+    <string name="action_dismiss">Dismiss</string>
+    <string name="action_change_video">Change video</string>
+    <string name="action_copy">Copy</string>
+
+    <string name="empty_title">Ask any YouTube video</string>
+    <string name="empty_body">Paste a link above, then ask a question. Answers come only from that video\'s transcript.</string>
+    <string name="empty_no_key">Add your Gemini API key in Settings to get started.</string>
+
+    <string name="hint_video_url">YouTube link</string>
+    <string name="hint_question">Ask about this video</string>
+    <string name="hint_api_key">Gemini API key</string>
+
+    <string name="label_api_key">Gemini API key</string>
+    <string name="label_api_key_help">Stored only on this device, encrypted. Get one at aistudio.google.com/app/apikey</string>
+    <string name="label_retrieval">Chunks to read</string>
+    <string name="label_retrieval_help">How many transcript passages to send to Gemini for each question.</string>
+    <string name="label_provider">Model provider</string>
+    <string name="label_provider_help">Where answers and embeddings come from. Each provider needs its own key, and a custom server needs its own address.</string>
+    <string name="provider_google">Google Gemini</string>
+    <string name="provider_openai">Custom server</string>
+    <string name="label_base_url">Server address</string>
+    <string name="label_base_url_help">The OpenAI-compatible base URL, usually ending in /v1 — for example https://your-server.example/v1</string>
+    <string name="hint_base_url">https://your-server.example/v1</string>
+    <string name="label_embeddings">Embeddings</string>
+    <string name="label_embeddings_help">Answers and search use two different models. Most servers host the chat model but not an embedding model, so the vector model can be pointed somewhere else with its own address and its own key.</string>
+    <string name="embeddings_same">Same as chat</string>
+    <string name="embeddings_custom">Separate</string>
+    <string name="label_embedding_base_url">Embedding server address</string>
+    <string name="hint_embedding_base_url">https://your-embedding-host/v1</string>
+    <string name="label_embedding_api_key">Embedding API key</string>
+    <string name="label_embedding_api_key_help">Stored on this device, encrypted, and never sent anywhere except this address.</string>
+    <string name="label_embedding_model">Embedding model</string>
+    <string name="label_models_help">Model ids are editable in case Google retires one.</string>
+    <string name="label_models_help_custom">Chat and embedding models are whatever your server serves. They are often different: the chat model has no embedding endpoint, so the embedding model is usually a separate one.</string>
+    <string name="error_no_base_url">Set the server address in Settings first.</string>
+    <string name="error_no_embedding_key">Add a separate embedding key in Settings, or switch embeddings back to the same key as the chat provider.</string>
+    <string name="label_chat_model">Chat model</string>
+    <string name="label_appearance">Appearance</string>
+    <string name="label_appearance_help">Choose light, dark, or follow your device setting.</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+
+    <string name="status_key_missing">No API key saved</string>
+    <string name="status_embedding_saved">Embedding key saved on this device</string>
+    <string name="status_key_saved">API key saved on this device</string>
+    <string name="status_validating">Checking with Google…</string>
+    <string name="status_valid">Key works</string>
+    <string name="status_invalid">Google rejected this key</string>
+    <string name="status_error">Could not check: %1$s</string>
+
+    <string name="state_indexing">Reading transcript…</string>
+    <string name="state_answering">Thinking…</string>
+    <string name="state_turns_remaining">%1$d of %2$d passages read</string>
+
+    <string name="suggestions_title">Ask next</string>
+    <string name="sources_title">From the transcript</string>
+    <string name="sources_hide">Hide sources</string>
+    <string name="sources_count">From the transcript (%1$d)</string>
+    <string name="source_timestamp">%1$s</string>
+
+    <string name="about_body">AskYoutube answers questions about a YouTube video using its transcript. It runs entirely on your phone: your API key never leaves the device, and there is no account and no server.</string>
+
+    <string name="error_no_api_key">Add your Gemini API key in Settings first.</string>
+    <string name="error_invalid_url">That does not look like a YouTube link.</string>
+    <string name="error_no_captions">This video has no captions, so there is no transcript to read.</string>
+    <string name="error_empty_transcript">YouTube returned an empty transcript. This sometimes happens on some networks.</string>
+    <string name="error_invalid_key">Your Gemini API key was rejected. Check it in Settings.</string>
+    <string name="error_quota">You have used up your Gemini quota for now. Try again later.</string>
+    <string name="error_model">That Gemini model is unavailable. Change it in Settings.</string>
+    <string name="error_overloaded">Gemini is busy right now. Try again.</string>
+    <string name="error_network">No connection. Check your network and try again.</string>
+    <string name="error_unexpected">Something went wrong: %1$s</string>
+</resources>

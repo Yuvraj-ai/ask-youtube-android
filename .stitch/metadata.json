@@ -1,0 +1,43 @@
+{
+  "projectId": "9750788470492335884",
+  "title": "AskYoutube",
+  "deviceType": "MOBILE",
+  "designSystem": "assets/f9d910526ee94c45ac4ddf513353b0bd",
+  "designMd": ".stitch/DESIGN.md",
+  "screens": [
+    {
+      "slug": "01-home-answered",
+      "screenId": "abc975c4bb384ea28d88441e1510e415",
+      "title": "AskYoutube - Answered State",
+      "width": 780,
+      "height": 2566,
+      "design": ".stitch/designs/01-home-answered.png",
+      "html": ".stitch/designs/01-home-answered.html",
+      "mapsTo": "ui/home/HomeScreen.kt"
+    },
+    {
+      "slug": "02-home-empty",
+      "screenId": "9ffa0731011d461c9a78c3863058b2de",
+      "title": "AskYoutube - First Run State",
+      "width": 780,
+      "height": 1768,
+      "design": ".stitch/designs/02-home-empty.png",
+      "html": ".stitch/designs/02-home-empty.html",
+      "mapsTo": "ui/home/HomeScreen.kt (EmptyState)"
+    },
+    {
+      "slug": "03-settings",
+      "screenId": "f5e3feebd5fd4d41bcd210f15e7de580",
+      "title": "AskYoutube - Settings",
+      "width": 780,
+      "height": 1906,
+      "design": ".stitch/designs/03-settings.png",
+      "html": ".stitch/designs/03-settings.html",
+      "mapsTo": "ui/settings/SettingsScreen.kt"
+    }
+  ],
+  "knownDeviations": [
+    "Stitch placed a YouTube logo beside the app title on 01 and 02. Not requested, and it borrows a third party's branding, which .stitch/DESIGN.md forbids. Remove with edit_screens.",
+    "Stitch rendered the video field with a placeholder URL on 02; the spec asked for an empty field."
+  ]
+}

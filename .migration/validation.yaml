@@ -1,0 +1,259 @@
+# Traceability matrix and validation status.
+
+# Status values: pass verified here, blocked cannot be verified in this
+# environment, pending not yet checked, manual requires a device or a live key.
+
+traceability:
+  - source_feature: gemini_api_key_entry
+    action: modify
+    android_code: ui/settings/SettingsScreen.kt, data/settings/SettingsStore.kt
+    test: Screenshotted on emulator; empty state, show/hide, status pill, clear
+    status: pass
+
+  - source_feature: youtube_url_entry
+    action: preserve
+    android_code: domain/VideoId.kt, ui/home/HomeScreen.kt
+    test: VideoIdTest — bare id, watch URL, youtu.be, shorts, embed, bad input
+    status: pass
+
+  - source_feature: question_entry
+    action: modify
+    android_code: ui/home/HomeScreen.kt chat input
+    test: typed and sent on emulator
+    status: pass
+
+  - source_feature: submit_action
+    action: replace
+    android_code: ui/home/HomeViewModel.kt
+    test: send gated on non-empty url+question; disabled state rendered
+    status: pass
+
+  - source_feature: transcript_extraction
+    action: modify
+    android_code: data/transcript/YouTubeTranscriptFetcher.kt
+    test: TranscriptParserTest — 17 cases incl. ASR fallback and bracket matching
+    status: pass
+    caveat: "live fetch unverified, see V7"
+
+  - source_feature: transcript_chunking
+    action: preserve
+    android_code: domain/Chunker.kt
+    test: ChunkerTest — 11 cases, sizes, overlap, timings, clamp, no content loss
+    status: pass
+
+  - source_feature: transcript_embedding
+    action: replace
+    android_code: data/gemini/GeminiClient.embedText
+    test: requires a live Gemini key
+    status: manual
+
+  - source_feature: vector_index_and_search
+    action: replace
+    android_code: domain/VectorIndex.kt
+    test: VectorIndexTest — 17 cases, cosine, top-k ordering, dim mismatch
+    status: pass
+
+  - source_feature: answer_generation
+    action: preserve
+    android_code: data/gemini/GeminiClient.generate, domain/RagEngine.kt
+    test: requires a live Gemini key
+    status: manual
+
+  - source_feature: answer_display
+    action: replace
+    android_code: ui/home/HomeScreen.kt
+    test: paragraph breaks preserved; verified in the Stitch design, not on device
+    status: pending
+
+  - source_feature: retrieved_sources
+    action: modify
+    android_code: ui/home/SourcesSection within TurnCard
+    test: mono timestamps + disclosure; verified in design, not on device
+    status: pending
+
+  - source_feature: conversation_history
+    action: add
+    android_code: ui/home/HomeViewModel.kt
+    test: session-only turns, in-memory
+    status: pass
+
+  - source_feature: index_caching
+    action: add
+    android_code: domain/RagEngine.kt
+    test: single-video cache; second question reuses it
+    status: pass
+
+  - source_feature: error_handling
+    action: add
+    android_code: domain/AppError.kt, ui/home/ErrorCard
+    test: NoApiKey path exercised on device; typed messages, no crash
+    status: pass
+
+  - source_feature: app_branding
+    action: modify
+    android_code: strings.xml, manifest label, adaptive launcher icon
+    test: label reads AskYoutube; icon is a brand-neutral speech bubble
+    status: pass
+
+  - source_feature: sidebar_form_layout
+    action: remove
+    android_code: n/a — contents redistributed to home and settings
+    test: no sidebar equivalent remains
+    status: pass
+
+added_beyond_source:
+  - id: dark_mode
+    what: "Full dark theme, following the OS by default."
+    where: ui/theme/Theme.kt, MainActivity.ThemedApp
+    status: pass
+    evidence: "Emulator forced to night mode; Home and Settings both re-rendered correctly (screenshots 07, 08)."
+
+  - id: appearance_override
+    what: "System / Light / Dark chips in Settings, persisted."
+    where: ui/settings/SettingsScreen.kt Appearance section
+    status: pass
+    evidence: >
+      With the OS in dark mode, selecting Light re-themed the app immediately and
+      the choice survived a cold start (screenshot 12). Confirmed in the
+      encrypted prefs file, which holds the theme value alongside the two
+      androidx keysets.
+
+defect_fixes:
+  - { id: D1, fix: send action now gates the pipeline, status: pass }
+  - { id: D2, fix: per-video index cache in RagEngine, status: pass }
+  - { id: D3, fix: sources render with mono timestamps, status: "pass in design, unverified on device" }
+  - { id: D4, fix: no newline flattening, paragraph breaks preserved, status: "pass in design, unverified on device" }
+  - { id: D5, fix: no LLMChain, direct REST, status: pass }
+  - { id: D6, fix: gemini-embedding-2 replaces models/embedding-001, status: "code done, needs live key" }
+  - { id: D7, fix: typed AppError surfaced as an inline error card, status: pass }
+  - { id: D8, fix: n/a for Android; no text wrapping at all, status: done }
+  - { id: D9, fix: key validated in Settings via a cheap probe, status: "code done, needs live key" }
+  - { id: D10, fix: auto-generated (kind=asr) track used as fallback, status: pass }
+  - { id: D11, fix: k exposed as a slider in Settings, default 4, status: pass }
+
+security_checks:
+  - { check: "No API key in source, resources, or BuildConfig", method: "detect_secrets.py on this repo", status: pass, evidence: "0 findings, re-run after the port" }
+  - { check: "Key stored encrypted at rest", method: "EncryptedSharedPreferences; keysets present in the on-device prefs file", status: pass }
+  - { check: "Key never logged or surfaced in errors", method: "code review of GeminiClient and AppError; key only ever an x-goog-api-key header", status: pass }
+  - { check: "HTTPS only, cleartext disabled", method: "network_security_config base-config cleartextTrafficPermitted=false", status: pass }
+  - { check: "INTERNET is the only permission", method: "manifest review", status: pass }
+  - { check: "Backups excluded so the key is not exported", method: "android:allowBackup=false", status: pass }
+
+verified_this_session:
+  - id: V1
+    check: Source repo contains no hardcoded secrets
+    method: python-to-android-migrator detect_secrets.py
+    result: "0 findings"
+    status: pass
+  - id: V2
+    check: Gemini embedding model and dims
+    method: vendor documentation
+    result: "gemini-embedding-2, 8192 input tokens, 128-3072 output dims, 768 recommended; embedding-001 legacy"
+    status: pass
+  - id: V3
+    check: Gemini generation model currency
+    method: vendor documentation
+    result: "gemini-3.5-flash GA and stable; source's gemini-2.0-flash is legacy"
+    status: pass
+  - id: V4
+    check: REST contract shape for embedContent and generateContent
+    method: vendor documentation
+    result: "x-goog-api-key header, content.parts[].text, embedding.values, candidates[0].content.parts[0].text"
+    status: pass
+  - id: V5
+    check: YouTube watch page yields captionTracks
+    method: curl against youtube.com
+    result: "PASS — 2 tracks (en, de) extracted from jNQXAC9IVRw"
+    status: pass
+  - id: V6
+    check: YouTube watch page requires a desktop User-Agent
+    method: curl with and without UA
+    result: "UA required"
+    status: pass
+  - id: V7
+    check: YouTube caption payload (timedtext) fetch
+    method: curl with fmt=json3, srv3, vtt, with and without cookies and referer
+    result: >
+      FAIL — every variant returned HTTP 200 with content-length 0 and
+      content-type text/html from server video-timedtext. Egress IP 110.235.218.230
+      is a datacenter address and YouTube serves empty captions to those. The
+      parser is unit-tested against fixtures instead, and a zero-length body maps
+      to a distinct user-facing error.
+    status: blocked
+  - id: V8
+    check: JDK and Gradle available for the build
+    method: "no system JDK and sudo needs a password; installed a portable Temurin 17 to /tmp and Gradle 8.9, then generated the wrapper"
+    status: pass
+  - id: V9
+    check: Debug APK builds
+    method: ./gradlew assembleDebug
+    result: "BUILD SUCCESSFUL, 11.0 MB, zero warnings"
+    status: pass
+  - id: V10
+    check: Unit tests
+    method: ./gradlew testDebugUnitTest
+    result: "55 tests, 0 failures (VideoId 10, Chunker 11, VectorIndex 17, TranscriptParser 17)"
+    status: pass
+  - id: V11
+    check: App installs, launches, and renders both screens on a device
+    method: emulator API 36, installDebug, screencap
+    result: "PASS — Home and Settings render, no crash, app process alive"
+    status: pass
+  - id: V12
+    check: Dark mode and appearance override
+    method: adb shell cmd uimode night yes; select Light; cold start
+    result: "PASS — both themes correct, override persists across a process kill"
+    status: pass
+  - id: V13
+    check: Stitch design tooling
+    method: Stitch MCP over JSON-RPC
+    result: >
+      Design system and 3 screens generated from .stitch/DESIGN.md. edit_screens
+      reports success but does NOT persist to the exported HTML or PNG, verified
+      via both list_screens and get_screen returning byte-identical artefacts.
+      The two unwanted details it failed to remove (a YouTube logo, a placeholder
+      URL) were simply not reproduced in the Compose code.
+    status: "pass with a known tool limitation"
+
+added_beyond_source_later:
+  - id: provider_selection
+    what: "Gemini or any OpenAI-compatible server, chosen in Settings."
+    where: data/llm/LlmClient.kt, LlmClientFactory.kt, OpenAiCompatibleClient.kt
+    status: pass
+    evidence: >
+      Provider chips and the conditional base-URL field render on the emulator
+      (screenshots 17, 18). 9 unit tests cover the response shapes, the base-URL
+      normalisation and the shared error mapping. Not verified against a live
+      third-party host, because none was available.
+
+  - id: independent_embedding_config
+    what: "Embeddings can use a different address, key and model from chat."
+    where: data/settings/SettingsStore.kt, LlmClientFactory.embedClient
+    status: pass
+    evidence: >
+      "Same as chat" / "Separate" chips plus separate address, key and model
+      fields, confirmed on device (screenshot 18). A missing embedding key maps
+      to its own error rather than a generic failure.
+
+  - id: base_url_hardening
+    what: "Pasted server addresses are normalised."
+    status: pass
+    evidence: >
+      A test caught that trimEnd('/') alone left surrounding whitespace, which
+      would have produced a malformed request from a copied URL. The client now
+      trims whitespace and trailing slashes; covered by three assertions.
+
+security_checks_added:
+  - { check: "No key in the repository", method: "detect_secrets.py plus a literal scan for the supplied key", result: "0 findings; supplied key absent from every file; repo has no commits" }
+  - { check: "Stitch design artifacts do not carry key-shaped strings", method: "detect_secrets.py flagged a Stitch-generated placeholder key (redacted) in a generated design HTML; scrubbed", result: "re-scan clean" }
+
+build_status:
+  compile: pass
+  tests: pass
+  device_run: pass
+  honest_statement: >
+    The app compiles, 55 unit tests pass, and it installs and renders on an
+    emulator in both light and dark themes, with the error path exercised. What
+    is NOT verified: the full end-to-end answer, because it needs a live Gemini
+    API key, and a live transcript fetch, because YouTube serves empty captions
+    to this datacenter IP (V7). No claim of end-to-end parity is made.

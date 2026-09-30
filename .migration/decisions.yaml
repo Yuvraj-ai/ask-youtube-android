@@ -1,0 +1,131 @@
+# Approved product and architecture decisions.
+# Recorded 2026-09-30 from a direct question to the user.
+
+decisions:
+  - id: target_platform
+    question: Which platform is the migration target?
+    decision: Native Android, Kotlin + Jetpack Compose, Material 3.
+    status: approved
+    rationale: Requested by the user. Follows references/android-architecture.md.
+
+  - id: execution_model
+    question: How does the Android app reach Gemini — on-device, or through a Python backend?
+    decision: >
+      On-device BYOK. No backend. The app calls the Gemini REST API and the
+      YouTube caption endpoint directly from the phone, authenticated with a
+      key the user supplies in Settings.
+    status: approved
+    rationale: >
+      The user chose this. It is the only model consistent with the requested
+      Settings key field, and it means the entire Python stack (langchain,
+      FAISS, streamlit) is not ported — it is replaced. Consequences:
+      no hosting cost, nothing to deploy, no server holding a key.
+    consequence: >
+      source_functions create_vector_db_from_youtube_url and
+      get_response_from_query are NOT translated to Kotlin behind a network
+      boundary. Their behavior is reimplemented natively in-process. The Python
+      repo stays a behavioural reference only.
+
+  - id: api_key_ownership
+    question: Who owns the Gemini API key?
+    decision: >
+      The end user, entered at runtime in the Settings screen, stored on-device
+      encrypted, clearable at will. No developer key exists in the project.
+    status: approved
+    rationale: >
+      Model A in security.md. Never in source, resources, or the APK. This
+      revises the source repo's behaviour, which kept the key in session memory
+      only — persistence is a deliberate, approved change.
+    accepted_risk: >
+      A key on a rooted device can be extracted. Accepted and normal for BYOK.
+      Strictly better than shipping a developer key to every user.
+
+  - id: ui_design_route
+    question: How is the Compose UI designed?
+    decision: Compose UI authored directly. Sleek (design-mobile-apps) is not used.
+    status: approved
+    rationale: >
+      The requested design-mobile-apps skill is a REST client for the paid
+      Sleek.design SaaS, not a design-guidance skill. It requires a SLEEK_API_KEY,
+      sustained use costs $49.99/month, and its output is rendered mockups whose
+      documented implementation targets are HTML/React Native/SwiftUI — not
+      Kotlin/Compose. Using it would add cost plus a hand-translation step for
+      output that is not compilable Compose. The user chose direct authoring.
+    note: The skill remains installed for other work.
+
+  - id: product_name
+    question: What is the app called?
+    decision: AskYoutube
+    status: approved
+    rationale: >
+      Chosen by the user. Resolves the source repo's "Summeriser" typo and its
+      summarise-vs-question mismatch, since the app answers questions.
+
+  - id: defect_handling
+    question: Should the ported app reproduce the source's known defects?
+    decision: >
+      No. D1-D11 in analysis.md are treated as bugs to fix, not behavior to
+      preserve. Capability is preserved; broken mechanism is not.
+    status: approved
+    rationale: >
+      Consistent with the migration skill's "migrate the application, not the
+      source syntax". The user explicitly invited a better implementation.
+      Each fix is traced in validation.yaml.
+
+  - id: embedding_model
+    question: Which embedding model replaces the retired `models/embedding-001`?
+    decision: gemini-embedding-2, output dimensionality 768.
+    status: approved
+    rationale: >
+      Verified against current docs 2026-09-30. `embedding-001` is legacy.
+      gemini-embedding-2 accepts 8192 input tokens and supports 128-3072 output
+      dims with 768 recommended — matching the source's 768-dim FAISS index so
+      on-device cost stays low. gemini-embedding-001 (2048 token limit) is the
+      text-only fallback. IDs live in one constants file and are user-visible in
+      Settings, because model availability changes and must be fixable in one place.
+
+  - id: generative_model
+    question: Which generative model replaces gemini-2.0-flash?
+    decision: gemini-3.5-flash, temperature 0.
+    status: approved
+    rationale: >
+      Verified 2026-09-30. Docs state Gemini 3.5 Flash is GA and stable for
+      scaled production use; the source's gemini-2.0-flash is now legacy.
+      temperature 0 preserved from the source.
+
+  - id: vector_store
+    question: Is an on-device vector database needed?
+    decision: No. In-memory brute-force cosine scan over FloatArray.
+    status: approved
+    rationale: >
+      A typical transcript yields on the order of 10^2 chunks at 768 dims.
+      A full scan is microseconds of arithmetic. Room, a vector DB, or any
+      persistence layer would be pure overhead. ponytail ceiling recorded in code.
+
+  - id: navigation_library
+    question: Use Navigation Compose for two screens?
+    decision: No. Screen state enum + BackHandler.
+    status: approved
+    rationale: >
+      Two destinations with no arguments, deep links, or graphs. A `when` over
+      a screen enum is a fraction of the code and one less dependency. Ceiling
+      recorded in code: introduce Navigation Compose on a third destination,
+      deep links, or saved back-stack state.
+
+  - id: dependency_injection
+    question: Use Hilt?
+    decision: No. Hand-rolled AppContainer on the Application.
+    status: approved
+    rationale: >
+      Hilt requires an annotation processor plus a Gradle plugin for a graph of
+      about five objects. A container object is sufficient and keeps builds fast.
+
+  - id: json_handling
+    question: Which JSON library?
+    decision: org.json from the Android framework, plus OkHttp for transport.
+    status: approved
+    rationale: >
+      Three small, stable request/response shapes do not justify Retrofit, a
+      converter, and a serialization codegen plugin. org.json ships with Android.
+      OkHttp is the one external networking dependency, for timeouts and
+      correct redirect/connection behaviour.

@@ -1,0 +1,92 @@
+# Target architecture — AskYoutube (on-device BYOK, no backend)
+
+# Current (source) architecture
+
+# See analysis.md. Summary: Streamlit presentation fused with LangChain
+# orchestration, rebuilt per rerun, no persistence, no API boundary, no config layer.
+
+# Proposed target architecture
+
+diagram: |
+  ┌──────────────────────────────────────────────────────────────┐
+  │ Android app (Kotlin, single process)                         │
+  │                                                              │
+  │  ui/            Compose screens + ViewModels                │
+  │                   HomeScreen (chat)  SettingsScreen          │
+  │                                                              │
+  │  data/                                                          │
+  │    transcript/  YouTubeTranscriptFetcher  (watch page scrape) │
+  │    gemini/      GeminiClient              (embed, generate)  │
+  │    settings/    SettingsStore             (encrypted key)    │
+  │                                                              │
+  │  domain/                                                       │
+  │    Chunker         transcript -> overlapping chunks          │
+  │    VectorIndex     brute-force cosine top-k                  │
+  │    RagEngine       orchestrates the 4-step pipeline          │
+  │    AppError        typed, user-facing failure types          │
+  │                                                              │
+  │  network/     OkHttp client (single instance)                │
+  └───────────────┬───────────────────────────┬──────────────────┘
+                  │ HTTPS                     │ HTTPS
+                  ▼                           ▼
+     youtube.com/api/timedtext      generativelanguage.googleapis.com
+     (scrape watch page for          /v1beta/models/{model}:
+      captionTracks, then json3)      embedContent, generateContent
+
+### Why there is no server tier
+
+# The source's Python does four things: download a transcript, split it, embed
+# it, search it, then prompt a model. None require a server once the key lives
+# on the device. Keeping a backend would mean deploying langchain + FAISS to
+# host it and would create a key on that host — strictly worse than the approved
+# Model A, for no capability gain.
+
+# ### Module responsibilities
+#
+# | Module | Responsibility | Must not |
+# |---|---|---|
+# | `GeminiClient` | embedContent, generateContent, key validation probe | know about transcripts or UI |
+# | `YouTubeTranscriptFetcher` | video id validation, watch-page scrape, caption track selection, json3 parse | know about embeddings |
+# | `Chunker` | overlapping split, preserve cue timestamps | do I/O |
+# | `VectorIndex` | add, cosine top-k | do I/O or know about Gemini |
+# | `RagEngine` | cache index per video, wire the pipeline, build the prompt | touch UI types |
+# | `SettingsStore` | encrypted read/write of key and model ids | log the key |
+# | `HomeViewModel` | `StateFlow<HomeUiState>`, event handling | do I/O directly |
+# | Compose screens | render state, emit events | contain business logic |
+
+# ### State flow
+#
+# Unidirectional. Each ViewModel exposes one immutable `UiState` via `StateFlow`.
+# Screens render it and emit events. `RagEngine` work happens on
+# `Dispatchers.IO` inside `viewModelScope`.
+
+# ### The four network calls
+# 
+# | # | Call | Endpoint | Cacheable |
+# |---|---|---|---|
+# | 1 | Fetch transcript | `youtube.com/watch` scrape + `api/timedtext` | yes, per video id |
+# | 2 | Embed query | `models/gemini-embedding-2:embedContent` | no |
+# | 3 | Embed chunks | same, one per chunk | yes, per video id — this is the expensive step |
+# | 4 | Generate answer | `models/gemini-3.5-flash:generateContent` | no |
+# 
+# Step 3 is the reason the index is cached in memory per video id: without it
+# (defect D2) every question re-pays the full embedding cost of the transcript.
+# 
+# ### Permissions
+# 
+# `android.permission.INTERNET` only. No storage, camera, location, or
+# notifications. Cleartext traffic stays disabled.
+# 
+# ### Known limitations of this architecture
+# 
+# - **L1** Index cache is in-memory only. Process death loses it; the next
+#   question re-embeds. Acceptable for v1; a Room-backed cache is the upgrade
+#   path if users ask for instant follow-ups after the app is backgrounded.
+# - **L2** Caption fetching depends on scraping an undocumented YouTube surface.
+#   There is no official captions API. It can break, and it already returns
+#   empty bodies to datacenter IPs (see validation.yaml). The app treats this as
+#   a first-class error state rather than assuming success.
+# - **L3** A user-supplied key means per-user quota. A heavy transcript can hit
+#   free-tier limits. Surfaced as a distinct error.
+# - **L4** No cross-device sync of settings or history.
+# 

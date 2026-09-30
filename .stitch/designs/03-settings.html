@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - AskYoutube</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-low": "#fff1ed",
+            "on-primary-fixed-variant": "#832600",
+            "surface": "#FFFFFF",
+            "secondary": "#5d5e66",
+            "hairline": "#E4E4E7",
+            "primary-fixed-dim": "#ffb59d",
+            "ember": "#C2410C",
+            "surface-muted": "#F4F4F5",
+            "dark-ink": "#FAFAF9",
+            "dark-hairline": "#3F3F46",
+            "surface-container-high": "#fce3db",
+            "error": "#B91C1C",
+            "ink-faint": "#A1A1AA",
+            "on-primary-fixed": "#390c00",
+            "surface-bright": "#fff8f6",
+            "secondary-fixed": "#e3e1ec",
+            "surface-variant": "#f7ddd6",
+            "dark-surface-muted": "#27272A",
+            "secondary-container": "#e3e1ec",
+            "canvas": "#FAFAF9",
+            "inverse-surface": "#3c2d28",
+            "on-primary": "#ffffff",
+            "on-error-container": "#93000a",
+            "on-tertiary-fixed-variant": "#004494",
+            "tertiary-container": "#0069de",
+            "dark-ink-muted": "#A1A1AA",
+            "outline": "#8d7168",
+            "surface-container-lowest": "#ffffff",
+            "background": "#fff8f6",
+            "on-secondary": "#ffffff",
+            "dark-ink-faint": "#71717A",
+            "surface-container-highest": "#f7ddd6",
+            "dark-canvas": "#09090B",
+            "secondary-fixed-dim": "#c6c5cf",
+            "on-surface": "#261814",
+            "tertiary-fixed": "#d8e2ff",
+            "on-secondary-fixed-variant": "#46464e",
+            "on-primary-container": "#ffece7",
+            "inverse-primary": "#ffb59d",
+            "ink-muted": "#71717A",
+            "outline-variant": "#e1bfb5",
+            "tertiary": "#0051af",
+            "dark-error": "#FCA5A5",
+            "on-error": "#ffffff",
+            "primary-container": "#c2410c",
+            "on-tertiary-fixed": "#001a41",
+            "on-tertiary": "#ffffff",
+            "inverse-on-surface": "#ffede8",
+            "primary-fixed": "#ffdbd0",
+            "surface-tint": "#ac3400",
+            "ink": "#18181B",
+            "primary": "#9b2f00",
+            "on-secondary-container": "#63646c",
+            "error-container": "#ffdad6",
+            "dark-ember": "#FB923C",
+            "tertiary-fixed-dim": "#adc6ff",
+            "surface-dim": "#eed5cd",
+            "dark-surface": "#18181B",
+            "on-tertiary-container": "#ecf0ff",
+            "on-surface-variant": "#59413a",
+            "on-background": "#261814",
+            "surface-container": "#ffe9e3",
+            "on-secondary-fixed": "#1a1b22"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "2rem",
+            "space-lg": "1.5rem",
+            "space-md": "0.75rem",
+            "margin": "1rem",
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "gutter": "1rem"
+          },
+          "fontFamily": {
+            "mono-data": ["JetBrains Mono", "monospace"],
+            "label": ["Roboto", "sans-serif"],
+            "headline-sm": ["Roboto", "sans-serif"],
+            "headline-md": ["Roboto", "sans-serif"],
+            "headline-lg": ["Roboto", "sans-serif"],
+            "body-sm": ["Roboto", "sans-serif"],
+            "body-md": ["Roboto", "sans-serif"],
+            "body-lg": ["Roboto", "sans-serif"]
+          },
+          "fontSize": {
+            "mono-data": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+            "label": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+            "headline-sm": ["16px", {"lineHeight": "22px", "fontWeight": "500"}],
+            "headline-md": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+            "headline-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+            "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+            "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "body-lg": ["16px", {"lineHeight": "26px", "fontWeight": "400"}]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+    }
+    input[type=range]:focus {
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 4px;
+      cursor: pointer;
+      background: linear-gradient(to right, #C2410C 0%, #C2410C 44.44%, #E4E4E7 44.44%, #E4E4E7 100%);
+      border-radius: 2px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #C2410C;
+      cursor: pointer;
+      -webkit-appearance: none;
+      margin-top: -7px;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 0 0 1px #C2410C;
+    }
+    input[type=range]::-moz-range-track {
+      width: 100%;
+      height: 4px;
+      cursor: pointer;
+      background: linear-gradient(to right, #C2410C 0%, #C2410C 44.44%, #E4E4E7 44.44%, #E4E4E7 100%);
+      border-radius: 2px;
+    }
+    input[type=range]::-moz-range-thumb {
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #C2410C;
+      cursor: pointer;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 0 0 1px #C2410C;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-canvas text-ink antialiased min-h-screen flex flex-col justify-start items-center">
+<div class="w-full max-w-[640px] bg-canvas min-h-screen flex flex-col">
+<!-- Android Native Status Bar -->
+<div class="w-full h-7 px-4 pt-1 flex items-center justify-between text-ink select-none bg-canvas">
+<span class="font-mono-data text-mono-data font-medium tracking-tight">9:41</span>
+<div class="flex items-center gap-1.5 text-ink">
+<span class="material-symbols-outlined text-[16px]" data-icon="wifi">wifi</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="signal_cellular_alt">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="battery_full">battery_full</span>
+</div>
+</div>
+<!-- Top App Bar (Task-Focused / Settings context: back arrow, flat, hairline border underneath) -->
+<header class="w-full h-14 px-margin flex items-center bg-surface border-b border-hairline sticky top-0 z-10">
+<button aria-label="Navigate back" class="p-1.5 -ml-1.5 text-ink hover:bg-surface-muted rounded-full transition-colors duration-150 ease-out active:opacity-80 flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[24px]" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="ml-4 font-headline-md text-headline-md font-medium text-ink">Settings</h1>
+</header>
+<!-- Main Content: Single scrolling column, max width 640px -->
+<main class="flex-1 w-full bg-canvas">
+<!-- Section 1: Gemini API Key -->
+<section class="py-6 px-margin">
+<h2 class="font-headline-sm text-headline-sm font-medium text-ink">Gemini API key</h2>
+<p class="font-body-md text-body-md text-ink-muted leading-relaxed mt-1">
+          Stored only on this device, encrypted. Get one at <span class="text-ink">aistudio.google.com/app/apikey</span>
+</p>
+<div class="mt-4">
+<label class="block font-label text-label text-ink-muted mb-1.5" for="gemini-key-input">Gemini API key</label>
+<div class="relative">
+<input class="w-full bg-surface border border-hairline rounded-xl px-3.5 py-2.5 font-mono-data text-mono-data text-ink tracking-widest focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors placeholder:text-ink-faint" id="gemini-key-input" placeholder="••••••••••••••••••••••••" type="password" value="REDACTED_PLACEHOLDER"/>
+</div>
+</div>
+<!-- Controls Row -->
+<div class="mt-4 flex items-center gap-3">
+<button class="bg-ember text-on-primary rounded-xl px-5 py-2.5 font-label text-label hover:opacity-95 active:opacity-90 transition-opacity" type="button">
+            Save
+          </button>
+<button class="border border-hairline bg-surface text-ink rounded-xl px-4 py-2.5 font-label text-label hover:bg-surface-muted active:opacity-80 transition-colors" type="button">
+            Validate
+          </button>
+<button class="text-ink-muted hover:text-ink px-3 py-2.5 font-label text-label transition-colors" type="button">
+            Show
+          </button>
+</div>
+<!-- Status Pill -->
+<div class="mt-4">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-muted border border-hairline font-label text-label text-ink-muted">
+<span class="w-1.5 h-1.5 rounded-full bg-ink-faint"></span>
+<span>No API key saved</span>
+</div>
+</div>
+</section>
+<!-- Hairline Divider -->
+<div class="border-t border-hairline w-full"></div>
+<!-- Section 2: Retrieval -->
+<section class="py-6 px-margin">
+<h2 class="font-headline-sm text-headline-sm font-medium text-ink">Chunks to read</h2>
+<p class="font-body-md text-body-md text-ink-muted leading-relaxed mt-1">
+          How many transcript passages to send to Gemini for each question.
+        </p>
+<!-- Monospaced count indicator -->
+<div class="mt-3 font-mono-data font-bold text-3xl text-ink leading-none">
+          4
+        </div>
+<!-- Discrete tick slider -->
+<div class="mt-3">
+<div class="relative flex items-center">
+<input aria-label="Chunks to read" class="w-full" max="10" min="1" step="1" type="range" value="4"/>
+</div>
+<!-- Discrete marks/labels under slider -->
+<div class="flex justify-between px-0.5 mt-2 font-mono-data text-mono-data text-ink-faint">
+<span>1</span>
+<span>2</span>
+<span>3</span>
+<span class="text-ink font-medium">4</span>
+<span>5</span>
+<span>6</span>
+<span>7</span>
+<span>8</span>
+<span>9</span>
+<span>10</span>
+</div>
+</div>
+</section>
+<!-- Hairline Divider -->
+<div class="border-t border-hairline w-full"></div>
+<!-- Section 3: Models -->
+<section class="py-6 px-margin">
+<p class="font-body-md text-body-md text-ink-muted mb-4">
+          Model ids are editable in case Google retires one.
+        </p>
+<!-- Model 1 -->
+<div>
+<label class="block font-label text-label text-ink-muted mb-1.5" for="embedding-model">Embedding model</label>
+<input class="w-full bg-surface border border-hairline rounded-xl px-3.5 py-2.5 font-mono-data text-mono-data text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors" id="embedding-model" spellcheck="false" type="text" value="gemini-embedding-2"/>
+</div>
+<!-- Model 2 -->
+<div class="mt-4">
+<label class="block font-label text-label text-ink-muted mb-1.5" for="chat-model">Chat model</label>
+<input class="w-full bg-surface border border-hairline rounded-xl px-3.5 py-2.5 font-mono-data text-mono-data text-ink focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors" id="chat-model" spellcheck="false" type="text" value="gemini-3.5-flash"/>
+</div>
+</section>
+<!-- Hairline Divider -->
+<div class="border-t border-hairline w-full"></div>
+<!-- Section 4: About -->
+<section class="py-6 px-margin pb-12">
+<p class="font-body-sm text-body-sm text-ink-muted leading-relaxed">
+          AskYoutube answers questions about a YouTube video using its transcript. It runs entirely on your phone: your API key never leaves the device, and there is no account and no server.
+        </p>
+</section>
+</main>
+</div>
+</body></html>

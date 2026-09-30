@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AskYoutube - First Run</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-background": "#261814",
+            "inverse-on-surface": "#ffede8",
+            "error": "#B91C1C",
+            "secondary-fixed": "#e3e1ec",
+            "on-primary": "#ffffff",
+            "surface-container-high": "#fce3db",
+            "on-secondary-fixed-variant": "#46464e",
+            "background": "#fff8f6",
+            "dark-surface-muted": "#27272A",
+            "dark-ink-faint": "#71717A",
+            "on-error-container": "#93000a",
+            "ink-faint": "#A1A1AA",
+            "surface": "#FFFFFF",
+            "canvas": "#FAFAF9",
+            "on-primary-fixed": "#390c00",
+            "surface-container-low": "#fff1ed",
+            "on-primary-container": "#ffece7",
+            "ink-muted": "#71717A",
+            "surface-variant": "#f7ddd6",
+            "secondary-container": "#e3e1ec",
+            "on-tertiary-container": "#ecf0ff",
+            "surface-muted": "#F4F4F5",
+            "surface-dim": "#eed5cd",
+            "dark-ink": "#FAFAF9",
+            "dark-error": "#FCA5A5",
+            "dark-ember": "#FB923C",
+            "primary": "#9b2f00",
+            "outline-variant": "#e1bfb5",
+            "inverse-primary": "#ffb59d",
+            "primary-container": "#c2410c",
+            "outline": "#8d7168",
+            "secondary-fixed-dim": "#c6c5cf",
+            "dark-hairline": "#3F3F46",
+            "on-secondary-fixed": "#1a1b22",
+            "tertiary-container": "#0069de",
+            "primary-fixed-dim": "#ffb59d",
+            "primary-fixed": "#ffdbd0",
+            "tertiary-fixed": "#d8e2ff",
+            "on-tertiary-fixed-variant": "#004494",
+            "on-tertiary-fixed": "#001a41",
+            "surface-bright": "#fff8f6",
+            "ink": "#18181B",
+            "surface-container": "#ffe9e3",
+            "tertiary": "#0051af",
+            "secondary": "#5d5e66",
+            "on-secondary-container": "#63646c",
+            "ember": "#C2410C",
+            "surface-container-highest": "#f7ddd6",
+            "on-tertiary": "#ffffff",
+            "surface-tint": "#ac3400",
+            "inverse-surface": "#3c2d28",
+            "on-secondary": "#ffffff",
+            "dark-canvas": "#09090B",
+            "surface-container-lowest": "#ffffff",
+            "dark-ink-muted": "#A1A1AA",
+            "on-surface-variant": "#59413a",
+            "on-surface": "#261814",
+            "on-primary-fixed-variant": "#832600",
+            "hairline": "#E4E4E7",
+            "on-error": "#ffffff",
+            "tertiary-fixed-dim": "#adc6ff",
+            "dark-surface": "#18181B",
+            "error-container": "#ffdad6"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "margin": "1rem",
+            "gutter": "1rem",
+            "space-md": "0.75rem",
+            "space-xl": "2rem"
+          },
+          "fontFamily": {
+            "mono-data": ["monospace"],
+            "body-sm": ["Roboto"],
+            "body-lg": ["Roboto"],
+            "body-md": ["Roboto"],
+            "label": ["Roboto"],
+            "headline-sm": ["Roboto"],
+            "headline-lg": ["Roboto"],
+            "headline-md": ["Roboto"]
+          },
+          "fontSize": {
+            "mono-data": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+            "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+            "body-lg": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
+            "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "label": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+            "headline-sm": ["16px", {"lineHeight": "22px", "fontWeight": "500"}],
+            "headline-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+            "headline-md": ["18px", {"lineHeight": "24px", "fontWeight": "500"}]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-canvas text-ink antialiased min-h-screen flex flex-col justify-between selection:bg-surface-muted selection:text-ink">
+<!-- Mobile Screen Container (Constrained 640px Max Width) -->
+<div class="w-full max-w-[640px] mx-auto min-h-screen flex flex-col bg-surface border-x border-hairline relative">
+<!-- 1. Native Android Status Bar -->
+<header class="w-full bg-surface select-none">
+<div class="h-6 px-margin flex items-center justify-between text-xs text-ink-muted">
+<span class="font-mono-data text-mono-data font-medium tracking-tight text-ink">9:41</span>
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-[15px] leading-none" data-icon="signal_cellular_4_bar">signal_cellular_4_bar</span>
+<span class="material-symbols-outlined text-[15px] leading-none" data-icon="wifi">wifi</span>
+<span class="material-symbols-outlined text-[16px] leading-none" data-icon="battery_full">battery_full</span>
+</div>
+</div>
+<!-- Shared Component: TopAppBar -->
+<div class="w-full max-w-[640px] mx-auto flex items-center justify-between px-margin h-14 border-b border-hairline bg-surface">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[24px]" data-icon="smart_display" data-weight="fill" style="font-variation-settings: 'FILL' 1;">smart_display</span>
+<h1 class="font-headline-md text-headline-md font-bold text-ink tracking-tight">AskYoutube</h1>
+</div>
+<button aria-label="Settings" class="w-10 h-10 -mr-2 flex items-center justify-center rounded-full text-ink hover:bg-surface-muted transition-colors duration-150 ease-out active:opacity-80" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<!-- 2. Video Field Region -->
+<section class="w-full pt-3 pb-4 px-margin border-b border-hairline bg-surface">
+<label class="block font-label text-label text-ink-muted mb-1.5" for="youtube-link-input">
+        YouTube link
+      </label>
+<div class="relative">
+<input class="w-full h-11 px-3.5 bg-surface text-ink text-body-md font-body-md placeholder:text-ink-faint border border-hairline rounded-xl focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors duration-150" id="youtube-link-input" placeholder="https://www.youtube.com/watch?v=..." type="url"/>
+</div>
+</section>
+<!-- 3. Empty State (Main Content - Optical Center) -->
+<main class="flex-1 flex flex-col items-center justify-center px-margin py-8">
+<div class="w-full max-w-[380px] flex flex-col items-center text-center">
+<!-- Headline -->
+<h2 class="font-headline-lg text-headline-lg font-semibold text-ink">
+          Ask any YouTube video
+        </h2>
+<!-- Body Copy -->
+<p class="mt-2 text-ink-muted font-body-md text-body-md max-w-[340px] leading-relaxed">
+          Paste a link above, then ask a question. Answers come only from that video's transcript.
+        </p>
+<!-- Inline Warning Pill -->
+<div class="mt-5 w-full bg-error-container/40 border border-error/20 rounded-lg py-2 px-3 flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-error text-[18px] flex-shrink-0" data-icon="warning">warning</span>
+<span class="font-body-sm text-body-sm text-error font-medium text-left">
+            Add your Gemini API key in Settings to get started.
+          </span>
+</div>
+<!-- Single Action Button -->
+<div class="mt-4">
+<button class="h-9 px-4 inline-flex items-center justify-center gap-1.5 rounded-lg border border-hairline bg-surface hover:bg-surface-muted text-ink font-label text-label transition-colors duration-150 ease-out active:opacity-80" type="button">
+<span class="material-symbols-outlined text-[16px] text-ink-muted" data-icon="settings">settings</span>
+<span>Settings</span>
+</button>
+</div>
+</div>
+</main>
+<!-- 4. Pinned Bottom Input Bar & Navigation Pill -->
+<footer class="w-full bg-surface border-t border-hairline select-none">
+<div class="px-margin py-3 flex items-center gap-3">
+<!-- Inactive Empty Text Field -->
+<div class="flex-1 relative">
+<input class="w-full h-12 px-4 bg-surface-muted border border-hairline rounded-full text-body-md font-body-md text-ink placeholder:text-ink-faint cursor-not-allowed select-none focus:outline-none" disabled="" placeholder="Ask about this video" type="text"/>
+</div>
+<!-- 48dp Send Button (Inactive Ember State) -->
+<button aria-label="Send question" class="w-12 h-12 rounded-full bg-ember opacity-50 flex items-center justify-center cursor-not-allowed flex-shrink-0 text-on-primary" disabled="" type="button">
+<span class="material-symbols-outlined text-[20px] text-white" data-icon="arrow_upward">arrow_upward</span>
+</button>
+</div>
+<!-- Android Navigation Bar Pill -->
+<div class="h-5 w-full flex items-center justify-center pb-1">
+<div class="w-28 h-1 bg-ink/30 rounded-full"></div>
+</div>
+</footer>
+</div>
+</body></html>
